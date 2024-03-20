@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="DietManager801G4" default="default" basedir=".">
+    <description>Builds, tests, and runs the project DietManager801G4.</description>
+    <import file="nbproject/build-impl.xml"/>
+</project>
