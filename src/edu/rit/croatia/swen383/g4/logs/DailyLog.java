@@ -12,7 +12,9 @@ import java.util.Map;
 public class DailyLog {
 
   private LocalDate date;
-  private Map<Food, ArrayList<Integer>> intake;
+  // intakeAmount is a map of food which contains duplicate values for integers
+  // which represent the amount of servings of that food
+  private Map<Food, ArrayList<Integer>> intakeAmount;
   private double weight;
 
   /**
@@ -24,7 +26,7 @@ public class DailyLog {
   public DailyLog(LocalDate date, double weight) {
     this.date = date;
     this.weight = weight;
-    this.intake = new HashMap<>();
+    this.intakeAmount = new HashMap<>();
   }
 
   /**
@@ -34,7 +36,7 @@ public class DailyLog {
    */
   public DailyLog(LocalDate date) {
     this.date = date;
-    this.intake = new HashMap<>();
+    this.intakeAmount = new HashMap<>();
   }
 
   /**
@@ -56,12 +58,12 @@ public class DailyLog {
   }
 
   /**
-   * Gets intake.
+   * Gets intakeAmount.
    *
-   * @return the intake
+   * @return the intakeAmount
    */
-  public Map<Food, ArrayList<Integer>> getIntake() {
-    return intake;
+  public Map<Food, ArrayList<Integer>> getIntakeAmount() {
+    return intakeAmount;
   }
 
   /**
@@ -91,19 +93,17 @@ public class DailyLog {
   public void addFood(Food food, double count) {
     ArrayList<Integer> counts = new ArrayList<>();
     counts.add(Math.round((float) count));
-    intake.put(food, counts);
+    intakeAmount.put(food, counts);
   }
 
   @Override
   public String toString() {
-    return (
-      "DailyLog: \t\n" +
-      "\t Date = " +
-      date +
-      "\t Intake = " +
-      intake +
-      "\t Weight = " +
-      weight
-    );
+    return ("DailyLog: \t\n" +
+        "\t Date = " +
+        date +
+        "\t Intake = " +
+        intakeAmount +
+        "\t Weight = " +
+        weight);
   }
 }
