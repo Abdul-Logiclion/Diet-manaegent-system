@@ -136,9 +136,10 @@ public class DietManagerController {
 
         DailyLog dailyLog = model.getDailyLogByDate(date);
         if (dailyLog == null) {
-            dailyLog = new DailyLog(date, model.getUser().getCurrentWeight());
+                 dailyLog = new DailyLog(date);
             model.getLogCollection().addDailyLog(dailyLog);
         }
+
 
         dailyLog.addFood(food, servings);
         model.saveCsvData();
