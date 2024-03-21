@@ -91,7 +91,7 @@ public class DietManagerModel {
     LocalDate today = LocalDate.now();
     DailyLog log = logCollection.getDailyLogByDate(today);
     if (log == null) {
-      log = new DailyLog(today, user.getCurrentWeight());
+      log = new DailyLog(today);
       logCollection.addDailyLog(log);
     }
     return log;
@@ -114,6 +114,17 @@ public class DietManagerModel {
    */
   public LogCollection getLogCollection() {
     return logCollection;
+  }
+
+  /**
+   * Get daily calorie intake.
+   */
+  public double getDailyCalorieIntake() {
+    return user.getDailyCalorieIntake();
+  }
+
+  public void addDailyCalorieIntake(double calorieIntake) {
+    user.updateDailyCalorieIntake(calorieIntake);
   }
 
   private void loadCsvData() {
