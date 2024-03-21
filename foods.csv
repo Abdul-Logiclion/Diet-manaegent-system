@@ -9,6 +9,8 @@ b,Bread (slice),80.0,1.0,15.0,2.0
 b,Peanut Butter (tbsp),95.0,8.0,3.5,4.0
 r,PB Sandwich,Bread (slice),2.0,Peanut Butter (tbsp),2.0
 b,Jelly (tbsp),56.0,6.3,14.7,0.0
-r,PB+J Sandwich,PB Sandwich,1.0,Jelly (tbsp),1.0
+r,PB+J Sandwich,Jelly (tbsp),1.0
 b,Cola (can),140.0,0.0,39.0,0.0
-r,Bad Dinner,Pizza Slice,2.0,HotDog+Bun,2.0,Potato Salad (cup),1.8,Cola (can),1.0,Berry Pie Slice,1.5
+r,Bad Dinner,Pizza Slice,2.0,Potato Salad (cup),1.8,Cola (can),1.0,Berry Pie Slice,1.5
+b,Burek,589.0,30.0,40.0,16.0
+b,BigMac,386.0,20.0,30.0,13.0
