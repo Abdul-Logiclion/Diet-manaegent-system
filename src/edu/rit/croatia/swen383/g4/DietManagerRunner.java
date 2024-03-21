@@ -8,12 +8,13 @@ import javafx.application.Application;
  * The type Diet manager runner.
  */
 public class DietManagerRunner {
-    /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     */
-    public static void main(String[] args) {
-        Application.launch(DietManagerView.class, args);
-    }
+
+  /**
+   * The entry point of application.
+   *
+   * @param args the input arguments
+   */
+  public static void main(String[] args) {
+    Application.launch(DietManagerView.class, args);
+  }
 }

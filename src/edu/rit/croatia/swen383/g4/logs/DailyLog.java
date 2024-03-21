@@ -1,77 +1,109 @@
 package edu.rit.croatia.swen383.g4.logs;
 
+import edu.rit.croatia.swen383.g4.food.Food;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.rit.croatia.swen383.g4.food.Food;
-
-
+/**
+ * The type Daily log.
+ */
 public class DailyLog {
-    private LocalDate date;
-    private Map<Food, ArrayList<Integer>> intake;
-    private double weight;
 
-    
-    public DailyLog(LocalDate date, double weight) {
-        this.date = date;
-        this.weight = weight;
-        this.intake = new HashMap<>();
-    }
+  private LocalDate date;
+  private Map<Food, ArrayList<Integer>> intake;
+  private double weight;
 
-   
-    public DailyLog(LocalDate date) {
-        this.date = date;
-        this.intake = new HashMap<>();
-    }
+  /**
+   * Instantiates a new Daily log.
+   *
+   * @param date   the date
+   * @param weight the weight
+   */
+  public DailyLog(LocalDate date, double weight) {
+    this.date = date;
+    this.weight = weight;
+    this.intake = new HashMap<>();
+  }
 
-    public LocalDate getDate() {
-        return date;
-    }
+  /**
+   * Instantiates a new Daily log.
+   *
+   * @param date the date
+   */
+  public DailyLog(LocalDate date) {
+    this.date = date;
+    this.intake = new HashMap<>();
+  }
 
- 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+  /**
+   * Gets date.
+   *
+   * @return the date
+   */
+  public LocalDate getDate() {
+    return date;
+  }
 
-   
-    public Map<Food, ArrayList<Integer>> getIntake() {
-        return intake;
-    }
+  /**
+   * Sets date.
+   *
+   * @param date the date
+   */
+  public void setDate(LocalDate date) {
+    this.date = date;
+  }
 
-    /**
-     * Gets weight.
-     *
-     * @return the weight
-     */
-    public double getWeight() {
-        return weight;
-    }
+  /**
+   * Gets intake.
+   *
+   * @return the intake
+   */
+  public Map<Food, ArrayList<Integer>> getIntake() {
+    return intake;
+  }
 
-    /**
-     * Sets weight.
-     *
-     * @param weight the weight
-     */
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
+  /**
+   * Gets weight.
+   *
+   * @return the weight
+   */
+  public double getWeight() {
+    return weight;
+  }
 
-    /**
-     * Add food.
-     *
-     * @param food  the food
-     * @param count the count
-     */
-    public void addFood(Food food, double count) {
-        ArrayList<Integer> counts = new ArrayList<>();
-        counts.add(Math.round((float) count));
-        intake.put(food, counts);
-    }
+  /**
+   * Sets weight.
+   *
+   * @param weight the weight
+   */
+  public void setWeight(double weight) {
+    this.weight = weight;
+  }
 
-    @Override
-    public String toString() {
-        return "DailyLog: \t\n" + "\t Date = " + date + "\t Intake = " + intake + "\t Weight = " + weight;
-    }
+  /**
+   * Add food.
+   *
+   * @param food  the food
+   * @param count the count
+   */
+  public void addFood(Food food, double count) {
+    ArrayList<Integer> counts = new ArrayList<>();
+    counts.add(Math.round((float) count));
+    intake.put(food, counts);
+  }
+
+  @Override
+  public String toString() {
+    return (
+      "DailyLog: \t\n" +
+      "\t Date = " +
+      date +
+      "\t Intake = " +
+      intake +
+      "\t Weight = " +
+      weight
+    );
+  }
 }
