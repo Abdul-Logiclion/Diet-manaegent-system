@@ -1,7 +1,6 @@
 package edu.rit.croatia.swen383.g4;
 
 import edu.rit.croatia.swen383.g4.dmview.DietManagerView;
-import edu.rit.croatia.swen383.g4.food.FoodIdentifier;
 import javafx.application.Application;
 
 /**
