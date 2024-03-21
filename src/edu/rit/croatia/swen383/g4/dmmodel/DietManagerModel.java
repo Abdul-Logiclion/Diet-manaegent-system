@@ -8,7 +8,6 @@ import edu.rit.croatia.swen383.g4.logs.DailyLog;
 import edu.rit.croatia.swen383.g4.logs.LogCollection;
 import edu.rit.croatia.swen383.g4.user.User;
 import edu.rit.croatia.swen383.g4.util.CsvHandler;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,120 +16,116 @@ import java.util.List;
  */
 public class DietManagerModel {
 
-    
+  private final CsvHandler csvHandler;
+  private final FoodCollection foodCollection;
+  private final LogCollection logCollection;
+  private final User user;
 
-    /**
-     * Instantiates a new Diet manager model.
-     *
-     * @param foodCsvFile the food csv file
-     * @param logCsvFile  the log csv file
-     */
-    public DietManagerModel(String foodCsvFile, String logCsvFile) {
-        
+  /**
+   * Instantiates a new Diet manager model.
+   *
+   * @param foodCsvFile the food csv file
+   * @param logCsvFile  the log csv file
+   */
+  public DietManagerModel(String foodCsvFile, String logCsvFile) {
+    foodCollection = new FoodCollection();
+    logCollection = new LogCollection();
+    csvHandler = new CsvHandler(foodCsvFile, logCsvFile);
+    user = new User();
+    loadCsvData();
+  }
+
+  /**
+   * Add basic food.
+   *
+   * @param food the food
+   */
+  public void addBasicFood(BasicFood food) {
+    foodCollection.addFood(food);
+  }
+
+  /**
+   * Add recipe.
+   *
+   * @param recipe the recipe
+   */
+  public void addRecipe(Recipe recipe) {
+    foodCollection.addFood(recipe);
+  }
+
+  /**
+   * Gets food.
+   *
+   * @return the food
+   */
+  public List<Food> getFood() {
+    return foodCollection.getFoods();
+  }
+
+  /**
+   * Gets basic food by name.
+   *
+   * @param foodName the food name
+   * @return the basic food by name
+   */
+  public BasicFood getBasicFoodByName(String foodName) {
+    return (BasicFood) foodCollection.getFoodByName(foodName);
+  }
+
+  /**
+   * Gets food by name.
+   *
+   * @param foodName the food name
+   * @return the food by name
+   */
+  public Food getFoodByName(String foodName) {
+    return foodCollection.getFoodByName(foodName);
+  }
+
+  /**
+   * Gets daily log for today.
+   *
+   * @return the daily log for today
+   */
+  public DailyLog getDailyLogForToday() {
+    LocalDate today = LocalDate.now();
+    DailyLog log = logCollection.getDailyLogByDate(today);
+    if (log == null) {
+      log = new DailyLog(today, user.getCurrentWeight());
+      logCollection.addDailyLog(log);
     }
+    return log;
+  }
 
-    /**
-     * Add basic food.
-     *
-     * @param food the food
-     */
-    public void addBasicFood(BasicFood food) {
-        
-    }
+  /**
+   * Gets daily log by date.
+   *
+   * @param date the date
+   * @return the daily log by date
+   */
+  public DailyLog getDailyLogByDate(LocalDate date) {
+    return logCollection.getDailyLogByDate(date);
+  }
 
-    /**
-     * Add recipe.
-     *
-     * @param recipe the recipe
-     */
-    public void addRecipe(Recipe recipe) {
-       
-    }
+  /**
+   * Gets log collection.
+   *
+   * @return the log collection
+   */
+  public LogCollection getLogCollection() {
+    return logCollection;
+  }
 
-    /**
-     * Gets food.
-     *
-     * @return the food
-     */
-    public List<Food> getFood() {
-        return null;
-        
-    }
+  private void loadCsvData() {
+    csvHandler.loadFoodData(foodCollection);
+    csvHandler.loadLogData(logCollection, foodCollection);
+  }
 
-    /**
-     * Gets basic food by name.
-     *
-     * @param foodName the food name
-     * @return the basic food by name
-     */
-    public BasicFood getBasicFoodByName(String foodName) {
-        return null;
-        
-    }
-
-
-    /**
-     * Gets food by name.
-     *
-     * @param foodName the food name
-     * @return the food by name
-     */
-    public Food getFoodByName(String foodName) {
-        return null;
-        
-    }
-
-    /**
-     * Gets daily log for today.
-     *
-     * @return the daily log for today
-     */
-    public DailyLog getDailyLogForToday() {
-        return null;
-
-    }
-
-    /**
-     * Gets daily log by date.
-     *
-     * @param date the date
-     * @return the daily log by date
-     */
-    public DailyLog getDailyLogByDate(LocalDate date) {
-        return null;
-
-    }
-
-    /**
-     * Gets user.
-     *
-     * @return the user
-     */
-    public User getUser() {
-        return null;
-    
-    }
-
-    /**
-     * Gets log collection.
-     *
-     * @return the log collection
-     */
-    public LogCollection getLogCollection() {
-        return null;
-    
-    }
-
-    private void loadCsvData() {
-   
-    }
-
-    /**
-     * Save csv data.
-     */
-    public void saveCsvData() {
-    
-    }
-
-
+  /**
+   * Save csv data.
+   */
+  public void saveCsvData() {
+    csvHandler.saveFoodData(foodCollection);
+    csvHandler.saveLogData(logCollection);
+  }
 }
