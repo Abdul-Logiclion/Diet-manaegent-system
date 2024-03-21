@@ -1,6 +1,7 @@
 package edu.rit.croatia.swen383.g4.dmview;
 
 import edu.rit.croatia.swen383.g4.dmcontroller.DietManagerController;
+import edu.rit.croatia.swen383.g4.dmmodel.DietManagerModel;
 import edu.rit.croatia.swen383.g4.food.BasicFood;
 import edu.rit.croatia.swen383.g4.food.Recipe;
 import java.time.LocalDate;
@@ -50,7 +51,11 @@ public class DietManagerView extends Application {
 
   @Override
   public void init() {
-    controller = new DietManagerController(this);
+    controller =
+      new DietManagerController(
+        this,
+        new DietManagerModel("foods.csv", "log.csv")
+      );
   }
 
   @Override
