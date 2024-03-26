@@ -7,6 +7,8 @@ import edu.rit.croatia.swen383.g4.food.Food;
 import edu.rit.croatia.swen383.g4.food.Recipe;
 import edu.rit.croatia.swen383.g4.logger.Logger;
 import edu.rit.croatia.swen383.g4.logs.DailyLog;
+
+import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,11 +73,8 @@ public class DietManagerController {
   public void updateDailyLog() {
     DailyLog dailyLog = model.getDailyLogForToday();
     view.setDailyLogText(
-      "Calories Consumed Today: " +
-      calculateCalories(dailyLog) +
-      "\n" +
-      dailyLog.toString()
-    );
+        "Calories Consumed Today: " + calculateCalories(dailyLog) + "\n" +
+            dailyLog.toString());
   }
 
   /**
@@ -84,12 +83,10 @@ public class DietManagerController {
    * @return the basic food
    */
   public List<String> getBasicFood() {
-    return model
-      .getFood()
-      .stream()
-      .filter(food -> food instanceof BasicFood)
-      .map(Food::getName)
-      .collect(Collectors.toList());
+    return model.getFood().stream()
+        .filter(food -> food instanceof BasicFood)
+        .map(Food::getName)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -98,11 +95,9 @@ public class DietManagerController {
    * @return the list
    */
   public List<String> getFood() {
-    return model
-      .getFood()
-      .stream()
-      .map(Food::getName)
-      .collect(Collectors.toList());
+    return model.getFood().stream()
+        .map(Food::getName)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -115,6 +110,10 @@ public class DietManagerController {
     return model.getBasicFoodByName(foodName);
   }
 
+  public Food getFoodByName(String foodName) {
+    return model.getFoodByName(foodName);
+  }
+
   /**
    * Add log entry.
    */
@@ -124,10 +123,7 @@ public class DietManagerController {
     try {
       servings = view.getServingAmount();
     } catch (NumberFormatException e) {
-      view.showAlert(
-        "INVALID INPUT",
-        "Serving amount is not valid. Please enter a valid number."
-      );
+      view.showAlert("INVALID INPUT", "Serving amount is not valid. Please enter a valid number.");
       LOGGER.log("Error with servings input: " + e.getMessage());
       LOGGER.log(e.getStackTrace().toString());
       return;
@@ -135,19 +131,13 @@ public class DietManagerController {
 
     LocalDate date = view.getSelectedDate();
     if (date == null) {
-      view.showAlert(
-        "INVALID INPUT",
-        "Selected date invalid. Please select a valid date."
-      );
+      view.showAlert("INVALID INPUT", "Selected date invalid. Please select a valid date.");
       return;
     }
 
     Food food = model.getFoodByName(foodName);
     if (food == null) {
-      view.showAlert(
-        "INVALID INPUT",
-        "Selected food is not a part of the list. Please select a valid food."
-      );
+      view.showAlert("INVALID INPUT", "Selected food is not a part of the list. Please select a valid food.");
       return;
     }
 
@@ -169,15 +159,13 @@ public class DietManagerController {
   public void displayLogForSelectedDate() {
     LocalDate date = view.getSelectedDate();
     DailyLog dailyLog = model.getDailyLogByDate(date);
-    if (dailyLog == null) view.setDailyLogText(
-      "No log for selected date."
-    ); else {
+    if (dailyLog == null)
+      view.setDailyLogText("No log for selected date.");
+    else {
+
       view.setDailyLogText(
-        "Calories Consumed Today: " +
-        calculateCalories(dailyLog) +
-        "\n" +
-        dailyLog.toString()
-      );
+          "Calories Consumed Today: " + calculateCalories(dailyLog) + "\n" +
+              dailyLog.toString());
     }
   }
 
@@ -189,23 +177,10 @@ public class DietManagerController {
    */
   public double calculateCalories(DailyLog dailyLog) {
     int calories = 0;
-    for (Map.Entry<Food, ArrayList<Integer>> entry : dailyLog
-      .getIntakeAmount()
-      .entrySet()) {
-      if (entry.getKey() instanceof BasicFood) calories +=
-        ((BasicFood) entry.getKey()).getCalories() *
-        entry.getValue().get(0); else if (entry.getKey() instanceof Recipe) {
-        for (Map.Entry<BasicFood, Double> basicFoodInRecipe : (
-          (Recipe) entry.getKey()
-        ).getBasicFoods()
-          .entrySet()) {
-          calories +=
-            basicFoodInRecipe.getKey().getCalories() *
-            basicFoodInRecipe.getValue() *
-            entry.getValue().get(0);
-        }
-      }
-    }
+    for (Map.Entry<Food, ArrayList<Integer>> entry : dailyLog.getIntakeAmount().entrySet())
+      calories += entry.getKey().getCalories() * entry.getValue().get(0);
+
     return calories;
   }
+
 }
