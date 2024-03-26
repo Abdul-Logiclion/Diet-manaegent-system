@@ -19,9 +19,10 @@ public class User {
    * Instantiates a new User.
    */
   public User() {
-    currentWeight = 0;
-    initialWeight = 0;
-    dailyCalorieIntake = 0;
+    // maybe needs some altering
+    currentWeight = 68;
+    initialWeight = 68;
+    dailyCalorieIntake = 2000;
     desiredWeight = 0;
   }
 

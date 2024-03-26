@@ -47,6 +47,7 @@ public class CsvHandler {
 
       lines
         .map(line -> line.split(","))
+        .filter(row -> row.length > 0 && !row[0].isBlank())
         .forEach(row -> {
           FoodIdentifier identifier = FoodIdentifier.valueOf(
             String.valueOf(Character.toUpperCase(row[0].charAt(0)))
@@ -69,24 +70,24 @@ public class CsvHandler {
             foodCollection.addFood(food);
           } else if (identifier == FoodIdentifier.R) {
             String recipeName = row[1];
-            Map<Food, Double> foods = new LinkedHashMap<>();
-
+            Map<Food, Double> foodsMap = new LinkedHashMap<>();
+            List<Food> foods = new ArrayList<>();
             for (int i = 2; i < row.length; i += 2) {
               String foodName = row[i];
               double quantity = Double.parseDouble(row[i + 1]);
               Food food = foodCollection
                 .getFoods()
                 .stream()
-                .filter(f ->
-                  f instanceof BasicFood && f.getName().equals(foodName)
-                )
+                .filter(f -> f.getName().equals(foodName))
                 .findFirst()
                 .orElse(null);
-              if (food instanceof BasicFood) {
-                foods.put(food, quantity);
+
+              if (food != null) {
+                foodsMap.put(food, quantity);
+                foods.add(food);
               }
             }
-            Recipe recipe = new Recipe(recipeName, foods);
+            Recipe recipe = new Recipe(recipeName, foodsMap, foods);
             foodCollection.addFood(recipe);
           }
         });
@@ -108,6 +109,8 @@ public class CsvHandler {
     LogCollection logCollection,
     FoodCollection foodCollection
   ) {
+    // Add user integration for weight, where I check for 'w' can also add an enum Identifier
+
     try {
       lines = Files.lines(Paths.get(logFileName));
 
@@ -168,7 +171,7 @@ public class CsvHandler {
           writer.println(line);
         } else if (food instanceof Recipe recipe) {
           List<String> basicFoodNamesAndQuantities = new ArrayList<>();
-          for (Map.Entry<Food, Double> entry : recipe.getFoods().entrySet()) {
+          for (Map.Entry<Food, Double> entry : recipe.getRecipe().entrySet()) {
             basicFoodNamesAndQuantities.add(entry.getKey().getName());
             basicFoodNamesAndQuantities.add(Double.toString(entry.getValue()));
           }
@@ -201,23 +204,21 @@ public class CsvHandler {
 
       for (DailyLog log : logCollection.getDailyLogs()) {
         LocalDate date = log.getDate();
-        for (Map.Entry<Food, ArrayList<Integer>> entry : log
-          .getIntakeAmount()
+        for (Map.Entry<Food, Double> entry : log
+          .getIntakeAndServing()
           .entrySet()) {
           Food food = entry.getKey();
-          ArrayList<Integer> counts = entry.getValue();
-          for (Integer count : counts) {
-            String line = String.join(
-              ",",
-              Integer.toString(date.getYear()),
-              Integer.toString(date.getMonthValue()),
-              Integer.toString(date.getDayOfMonth()),
-              "f",
-              food.getName(),
-              Integer.toString(count)
-            );
-            writer.println(line);
-          }
+
+          String line = String.join(
+            ",",
+            Integer.toString(date.getYear()),
+            Integer.toString(date.getMonthValue()),
+            Integer.toString(date.getDayOfMonth()),
+            "f",
+            food.getName(),
+            Double.toString(entry.getValue())
+          );
+          writer.println(line);
         }
       }
     } catch (IOException e) {
