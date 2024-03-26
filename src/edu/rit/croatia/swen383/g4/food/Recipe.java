@@ -47,4 +47,28 @@ public class Recipe implements Food {
         }
         return "Recipe: \t\n" + "\t Recipe Name = " + recipeName + "\n\t\tBasic Foods for recipe =  " + basicFoodsPrint.toString();
     }
+
+    @Override
+    public double getCalories() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public double getFat() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public double getCarbs() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public double getProtein() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }
