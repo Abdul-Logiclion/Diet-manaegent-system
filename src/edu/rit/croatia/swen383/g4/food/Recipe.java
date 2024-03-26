@@ -1,6 +1,5 @@
 package edu.rit.croatia.swen383.g4.food;
 
-
 import java.util.Map;
 
 /**
@@ -9,26 +8,26 @@ import java.util.Map;
 public class Recipe implements Food {
 
     private String recipeName;
-    private Map<BasicFood, Double> basicFoods;
+    private Map<Food, Double> recipe;
 
     /**
      * Instantiates a new Recipe.
      *
      * @param recipeName the recipe name
-     * @param basicFoods the basic foods
+     * @param recipe     the recipe
      */
-    public Recipe(String recipeName, Map<BasicFood, Double> basicFoods) {
+    public Recipe(String recipeName, Map<Food, Double> recipe) {
         this.recipeName = recipeName;
-        this.basicFoods = basicFoods;
+        this.recipe = recipe;
     }
 
     /**
-     * Gets basic foods.
+     * Gets recipe.
      *
-     * @return the basic foods
+     * @return the recipe
      */
-    public Map<BasicFood, Double> getBasicFoods() {
-        return basicFoods;
+    public Map<Food, Double> getRecipe() {
+        return recipe;
     }
 
     @Override
@@ -37,38 +36,75 @@ public class Recipe implements Food {
     }
 
     @Override
-    public String toString() {
-        StringBuilder basicFoodsPrint = new StringBuilder();
-        int i = 0;
-        for (Map.Entry<BasicFood, Double> entry : basicFoods.entrySet()) {
-            basicFoodsPrint.append(String.format("\t%s - Servings: %.2f\t\t",entry.getKey().getName(), entry.getValue()));
-            if (i++ < basicFoods.size() - 1)
-                basicFoodsPrint.append("AND ");
-        }
-        return "Recipe: \t\n" + "\t Recipe Name = " + recipeName + "\n\t\tBasic Foods for recipe =  " + basicFoodsPrint.toString();
-    }
-
-    @Override
     public double getCalories() {
-        // TODO Auto-generated method stub
-        return 0;
+        double caloriesTotal = 0;
+        for (Map.Entry<Food, Double> entry : recipe.entrySet()) {
+            caloriesTotal += entry.getKey().getCalories() * entry.getValue();
+        }
+
+        recipe
+                .entrySet()
+                .forEach(entry -> {
+                    System.out.println(
+                            "Recipe1- " + entry.getKey() + " " + entry.getKey().getCalories());
+                });
+
+        for (Food food : recipe.keySet()) {
+            System.out.println(
+                    "Recip2: Name - " + food.getName() + " Protein - " + food.getCalories());
+        }
+
+        return caloriesTotal;
     }
 
     @Override
     public double getFat() {
-        // TODO Auto-generated method stub
-        return 0;
+        double fatTotal = 0;
+        for (Map.Entry<Food, Double> entry : recipe.entrySet()) {
+            fatTotal += entry.getKey().getFat() * entry.getValue();
+        }
+        return fatTotal;
     }
 
     @Override
     public double getCarbs() {
-        // TODO Auto-generated method stub
-        return 0;
+        double carbsTotal = 0;
+        for (Map.Entry<Food, Double> entry : recipe.entrySet()) {
+            carbsTotal += entry.getKey().getCarbs() * entry.getValue();
+        }
+        return carbsTotal;
     }
 
     @Override
     public double getProtein() {
-        // TODO Auto-generated method stub
-        return 0;
+        double proteinTotal = 0;
+        for (Map.Entry<Food, Double> entry : recipe.entrySet()) {
+            proteinTotal += entry.getKey().getProtein() * entry.getValue();
+        }
+
+        return proteinTotal;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Recipe Name: ").append(getName()).append("\n");
+        sb.append("Foods for recipe = ");
+
+        for (Map.Entry<Food, Double> entry : getRecipe().entrySet()) {
+            sb
+                    .append("\t")
+                    .append(entry.getKey().getName())
+                    .append(" - Servings: ")
+                    .append(String.format("%.2f", entry.getValue()))
+                    .append("\tAND ");
+        }
+
+        // Remove the last AND
+        if (!getRecipe().isEmpty()) {
+            sb.setLength(sb.length() - 5);
+        }
+
+        return sb.toString();
     }
 }
