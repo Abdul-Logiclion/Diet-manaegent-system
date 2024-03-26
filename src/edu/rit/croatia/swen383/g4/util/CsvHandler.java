@@ -19,10 +19,9 @@ public class CsvHandler {
   private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(
     "yyyy-M-d"
   );
+  private static final Logger LOGGER = new Logger();
   private final String foodFileName;
   private final String logFileName;
-  private static final Logger LOGGER = new Logger();
-
   private Stream<String> lines = null;
   private PrintWriter writer = null;
 
@@ -70,7 +69,7 @@ public class CsvHandler {
             foodCollection.addFood(food);
           } else if (identifier == FoodIdentifier.R) {
             String recipeName = row[1];
-            Map<BasicFood, Double> basicFoods = new LinkedHashMap<>();
+            Map<Food, Double> foods = new LinkedHashMap<>();
 
             for (int i = 2; i < row.length; i += 2) {
               String foodName = row[i];
@@ -84,11 +83,10 @@ public class CsvHandler {
                 .findFirst()
                 .orElse(null);
               if (food instanceof BasicFood) {
-                basicFoods.put((BasicFood) food, quantity);
+                foods.put(food, quantity);
               }
             }
-
-            Recipe recipe = new Recipe(recipeName, basicFoods);
+            Recipe recipe = new Recipe(recipeName, foods);
             foodCollection.addFood(recipe);
           }
         });
@@ -157,8 +155,7 @@ public class CsvHandler {
         new PrintWriter(Files.newBufferedWriter(Paths.get(foodFileName)));
 
       for (Food food : foodCollection.getFoods()) {
-        if (food instanceof BasicFood) {
-          BasicFood basicFood = (BasicFood) food;
+        if (food instanceof BasicFood basicFood) {
           String line = String.join(
             ",",
             Character.toString(FoodIdentifier.B.getChar()),
@@ -169,12 +166,9 @@ public class CsvHandler {
             Double.toString(basicFood.getProtein())
           );
           writer.println(line);
-        } else if (food instanceof Recipe) {
-          Recipe recipe = (Recipe) food;
+        } else if (food instanceof Recipe recipe) {
           List<String> basicFoodNamesAndQuantities = new ArrayList<>();
-          for (Map.Entry<BasicFood, Double> entry : recipe
-            .getBasicFoods()
-            .entrySet()) {
+          for (Map.Entry<Food, Double> entry : recipe.getFoods().entrySet()) {
             basicFoodNamesAndQuantities.add(entry.getKey().getName());
             basicFoodNamesAndQuantities.add(Double.toString(entry.getValue()));
           }
