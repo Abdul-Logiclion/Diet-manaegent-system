@@ -3,15 +3,19 @@ package edu.rit.croatia.swen383.g4.dmview;
 import edu.rit.croatia.swen383.g4.dmcontroller.DietManagerController;
 import edu.rit.croatia.swen383.g4.dmmodel.DietManagerModel;
 import edu.rit.croatia.swen383.g4.food.BasicFood;
+import edu.rit.croatia.swen383.g4.food.Food;
 import edu.rit.croatia.swen383.g4.food.Recipe;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -43,6 +47,8 @@ public class DietManagerView extends Application {
 
   private GridPane basicFoodInputGrid;
   private GridPane recipeInputGrid;
+  private GridPane statisticsGrid;
+  private PieChart nutritionChart;
 
   private ComboBox<String> foodSelectionComboBox;
   private TextField servingAmountField;
@@ -51,11 +57,9 @@ public class DietManagerView extends Application {
 
   @Override
   public void init() {
-    controller =
-      new DietManagerController(
+    controller = new DietManagerController(
         this,
-        new DietManagerModel("foods.csv", "log.csv")
-      );
+        new DietManagerModel("foods.csv", "log.csv"));
   }
 
   @Override
@@ -63,6 +67,7 @@ public class DietManagerView extends Application {
     // Create the user interface
     basicFoodInputGrid = createBasicFoodInputGrid();
     recipeInputGrid = createRecipeInputGrid();
+    statisticsGrid = createStatisticsGrid();
     HBox logInputArea = createLogInputArea();
 
     foodListTextArea = new TextArea();
@@ -77,14 +82,20 @@ public class DietManagerView extends Application {
     topInputGrid.addColumn(1, recipeInputGrid);
 
     VBox mainLayout = new VBox(
-      10,
-      topInputGrid,
-      foodListTextArea,
-      logInputArea,
-      dailyLogTextArea
-    );
+        10,
+        topInputGrid,
+        foodListTextArea,
+        logInputArea,
+        dailyLogTextArea);
     mainLayout.setPadding(new Insets(10));
     mainLayout.setPrefWidth(1000);
+
+    VBox statistics = new VBox(10, statisticsGrid);
+    statistics.setPadding(new Insets(10));
+    statistics.setPrefWidth(400);
+
+    HBox root = new HBox(10, mainLayout, statistics);
+    root.setPadding(new Insets(10));
 
     // Add event handlers
     addFoodButton.setOnAction(event -> controller.addBasicFood());
@@ -97,7 +108,7 @@ public class DietManagerView extends Application {
     controller.updateFoodList();
     controller.updateDailyLog();
 
-    primaryStage.setScene(new Scene(mainLayout));
+    primaryStage.setScene(new Scene(root));
     primaryStage.setTitle("Diet Manager");
     primaryStage.show();
   }
@@ -147,13 +158,47 @@ public class DietManagerView extends Application {
 
     grid.addRow(0, new Label("Recipe Name:"), recipeNameField);
     grid.addRow(
-      1,
-      new Label("Number of Ingredients (max 5):"),
-      numOfIngredientsField,
-      setIngredientsButton
-    );
+        1,
+        new Label("Number of Ingredients (max 5):"),
+        numOfIngredientsField,
+        setIngredientsButton);
 
     return grid;
+  }
+
+  private GridPane createStatisticsGrid() {
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setAlignment(Pos.CENTER);
+
+    updatePieChart();
+
+    grid.addRow(0, nutritionChart);
+
+    return grid;
+  }
+
+  public void updatePieChart() {
+    Map<String, Double> nutrients = this.controller.getNutrients();
+
+    System.out.println("View nutrients: " + nutrients);
+
+    ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
+        new PieChart.Data(
+            (String) nutrients.keySet().toArray()[0],
+            nutrients.get("Calories")),
+        new PieChart.Data(
+            (String) nutrients.keySet().toArray()[1],
+            nutrients.get("Fat")),
+        new PieChart.Data(
+            (String) nutrients.keySet().toArray()[2],
+            nutrients.get("Carbohydrates")),
+        new PieChart.Data(
+            (String) nutrients.keySet().toArray()[3],
+            nutrients.get("Protein")));
+    nutritionChart = new PieChart(pieChartData);
+    nutritionChart.setTitle("Daily Nutrient Intake");
   }
 
   private HBox createLogInputArea() {
@@ -169,16 +214,15 @@ public class DietManagerView extends Application {
     addLogEntryButton = new Button("Add Log Entry");
 
     hbox
-      .getChildren()
-      .addAll(
-        new Label("Select Food:"),
-        foodSelectionComboBox,
-        new Label("Serving Amount:"),
-        servingAmountField,
-        new Label("Select Date:"),
-        datePicker,
-        addLogEntryButton
-      );
+        .getChildren()
+        .addAll(
+            new Label("Select Food:"),
+            foodSelectionComboBox,
+            new Label("Serving Amount:"),
+            servingAmountField,
+            new Label("Select Date:"),
+            datePicker,
+            addLogEntryButton);
 
     return hbox;
   }
@@ -204,7 +248,7 @@ public class DietManagerView extends Application {
     }
 
     int numberOfIngredients = getNumberOfIngredients();
-    List<String> foodNames = controller.getBasicFood();
+    List<String> foodNames = controller.getFood();
 
     for (int i = 0; i < numberOfIngredients; i++) {
       ComboBox<String> comboBox = new ComboBox<>();
@@ -213,12 +257,11 @@ public class DietManagerView extends Application {
       ingredientComboBoxes[i] = comboBox;
       ingredientServingFields[i] = textField;
       recipeInputGrid.addRow(
-        2 + i,
-        new Label("Ingredient " + (i + 1) + ":"),
-        ingredientComboBoxes[i],
-        new Label("Amount:"),
-        ingredientServingFields[i]
-      );
+          2 + i,
+          new Label("Ingredient " + (i + 1) + ":"),
+          ingredientComboBoxes[i],
+          new Label("Amount:"),
+          ingredientServingFields[i]);
     }
     recipeInputGrid.add(addRecipeButton, 1, 2 + numberOfIngredients);
   }
@@ -230,23 +273,21 @@ public class DietManagerView extends Application {
    */
   public Recipe getInputRecipe() {
     String recipeName = recipeNameField.getText();
-    Map<BasicFood, Double> basicFoods = new HashMap<>();
+    Map<Food, Double> foodsMap = new HashMap<>();
 
     for (int i = 0; i < ingredientComboBoxes.length; i++) {
-      Object selectedItem =
-        ingredientComboBoxes[i].getSelectionModel().getSelectedItem();
+      Object selectedItem = ingredientComboBoxes[i].getSelectionModel().getSelectedItem();
       if (selectedItem == null) {
         continue;
       }
       String foodName = selectedItem.toString();
-      BasicFood basicFood = controller.getBasicFoodByName(foodName);
+      Food food = controller.getFoodByName(foodName);
       double servings = Double.parseDouble(
-        ingredientServingFields[i].getText()
-      );
-      basicFoods.put(basicFood, servings);
+          ingredientServingFields[i].getText());
+      foodsMap.put(food, servings);
     }
 
-    return new Recipe(recipeName, basicFoods);
+    return new Recipe(recipeName, foodsMap);
   }
 
   /**
