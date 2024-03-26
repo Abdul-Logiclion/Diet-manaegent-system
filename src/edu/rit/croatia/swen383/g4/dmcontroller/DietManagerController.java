@@ -7,10 +7,9 @@ import edu.rit.croatia.swen383.g4.food.Food;
 import edu.rit.croatia.swen383.g4.food.Recipe;
 import edu.rit.croatia.swen383.g4.logger.Logger;
 import edu.rit.croatia.swen383.g4.logs.DailyLog;
-
-import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,13 +52,14 @@ public class DietManagerController {
     model.addRecipe(recipe);
     model.saveCsvData();
     updateFoodList();
+    this.view.setFoodSelectionOptions(getFood());
   }
 
   /**
    * Update food list.
    */
   public void updateFoodList() {
-    List<Food> foods = model.getFood();
+    List<Food> foods = model.getFoods();
     StringBuilder stringBuilder = new StringBuilder();
     for (Food food : foods) {
       stringBuilder.append(food.toString()).append("\n");
@@ -73,20 +73,11 @@ public class DietManagerController {
   public void updateDailyLog() {
     DailyLog dailyLog = model.getDailyLogForToday();
     view.setDailyLogText(
-        "Calories Consumed Today: " + calculateCalories(dailyLog) + "\n" +
-            dailyLog.toString());
-  }
-
-  /**
-   * Gets basic food.
-   *
-   * @return the basic food
-   */
-  public List<String> getBasicFood() {
-    return model.getFood().stream()
-        .filter(food -> food instanceof BasicFood)
-        .map(Food::getName)
-        .collect(Collectors.toList());
+      "Calories Consumed Today: " +
+      calculateCalories(dailyLog) +
+      "\n" +
+      dailyLog.toString()
+    );
   }
 
   /**
@@ -95,19 +86,11 @@ public class DietManagerController {
    * @return the list
    */
   public List<String> getFood() {
-    return model.getFood().stream()
-        .map(Food::getName)
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Gets basic food by name.
-   *
-   * @param foodName the food name
-   * @return the basic food by name
-   */
-  public BasicFood getBasicFoodByName(String foodName) {
-    return model.getBasicFoodByName(foodName);
+    return model
+      .getFoods()
+      .stream()
+      .map(Food::getName)
+      .collect(Collectors.toList());
   }
 
   public Food getFoodByName(String foodName) {
@@ -123,7 +106,10 @@ public class DietManagerController {
     try {
       servings = view.getServingAmount();
     } catch (NumberFormatException e) {
-      view.showAlert("INVALID INPUT", "Serving amount is not valid. Please enter a valid number.");
+      view.showAlert(
+        "INVALID INPUT",
+        "Serving amount is not valid. Please enter a valid number."
+      );
       LOGGER.log("Error with servings input: " + e.getMessage());
       LOGGER.log(e.getStackTrace().toString());
       return;
@@ -131,26 +117,32 @@ public class DietManagerController {
 
     LocalDate date = view.getSelectedDate();
     if (date == null) {
-      view.showAlert("INVALID INPUT", "Selected date invalid. Please select a valid date.");
+      view.showAlert(
+        "INVALID INPUT",
+        "Selected date invalid. Please select a valid date."
+      );
       return;
     }
 
     Food food = model.getFoodByName(foodName);
     if (food == null) {
-      view.showAlert("INVALID INPUT", "Selected food is not a part of the list. Please select a valid food.");
+      view.showAlert(
+        "INVALID INPUT",
+        "Selected food is not a part of the list. Please select a valid food."
+      );
       return;
     }
 
     DailyLog dailyLog = model.getDailyLogByDate(date);
     if (dailyLog == null) {
       dailyLog = new DailyLog(date);
-      // dailyLog = new DailyLog(date, model.getUser().getCurrentWeight());
       model.getLogCollection().addDailyLog(dailyLog);
     }
 
     dailyLog.addFood(food, servings);
     model.saveCsvData();
     updateDailyLog();
+    view.updatePieChart();
   } // this method is called when the button is pressed
 
   /**
@@ -159,14 +151,17 @@ public class DietManagerController {
   public void displayLogForSelectedDate() {
     LocalDate date = view.getSelectedDate();
     DailyLog dailyLog = model.getDailyLogByDate(date);
-    if (dailyLog == null)
-      view.setDailyLogText("No log for selected date.");
-    else {
-
+    if (dailyLog == null) view.setDailyLogText(
+      "No log for selected date."
+    ); else {
       view.setDailyLogText(
-          "Calories Consumed Today: " + calculateCalories(dailyLog) + "\n" +
-              dailyLog.toString());
+        "Calories Consumed Today: " +
+        calculateCalories(dailyLog) +
+        "\n" +
+        dailyLog.toString()
+      );
     }
+    view.updatePieChart();
   }
 
   /**
@@ -177,10 +172,43 @@ public class DietManagerController {
    */
   public double calculateCalories(DailyLog dailyLog) {
     int calories = 0;
-    for (Map.Entry<Food, ArrayList<Integer>> entry : dailyLog.getIntakeAmount().entrySet())
-      calories += entry.getKey().getCalories() * entry.getValue().get(0);
+    for (Map.Entry<Food, Double> entry : dailyLog
+      .getIntakeAndServing()
+      .entrySet()) calories += entry.getKey().getCalories() * entry.getValue();
 
     return calories;
   }
 
+  /*
+   * Gathering nutrients
+   */
+  public Map<String, Double> getNutrients() {
+    Map<String, Double> nutrients = new HashMap<>();
+
+    DailyLog dailyLog = model.getDailyLogByDate(view.getSelectedDate());
+    nutrients.put("Calories", 0.0);
+    nutrients.put("Fat", 0.0);
+    nutrients.put("Carbohydrates", 0.0);
+    nutrients.put("Protein", 0.0);
+
+    if (dailyLog != null) {
+      double totalCalories = 0;
+      double totalFat = 0;
+      double totalCarbs = 0;
+      double totalProtein = 0;
+      for (Map.Entry<Food, Double> entry : dailyLog
+        .getIntakeAndServing()
+        .entrySet()) {
+        totalCalories += entry.getKey().getCalories() * entry.getValue();
+        totalFat += entry.getKey().getFat() * entry.getValue();
+        totalCarbs += entry.getKey().getCarbs() * entry.getValue();
+        totalProtein += entry.getKey().getProtein() * entry.getValue();
+      }
+      nutrients.put("Calories", totalCalories);
+      nutrients.put("Fat", totalFat);
+      nutrients.put("Carbohydrates", totalCarbs);
+      nutrients.put("Protein", totalProtein);
+    }
+    return nutrients;
+  }
 }
