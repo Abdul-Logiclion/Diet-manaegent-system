@@ -10,4 +10,12 @@ public interface Food {
    * @return the name
    */
   String getName();
+
+  double getCalories();
+
+  double getFat();
+
+  double getCarbs();
+
+  double getProtein();
 }
