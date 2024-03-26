@@ -77,8 +77,8 @@ public class LogCollection {
     if (dailyLog != null) {
       dailyLog.setDate(updatedLog.getDate());
       dailyLog.setWeight(updatedLog.getWeight());
-      dailyLog.getIntakeAmount().clear();
-      dailyLog.getIntakeAmount().putAll(updatedLog.getIntakeAmount());
+      dailyLog.getIntakeAndServing().clear();
+      dailyLog.getIntakeAndServing().putAll(updatedLog.getIntakeAndServing());
     }
   }
 }
