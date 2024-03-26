@@ -1,200 +1,132 @@
-package edu.rit.croatia.swen383.g4.dmcontroller;
+package edu.rit.croatia.swen383.g4.dmmodel;
 
-import edu.rit.croatia.swen383.g4.dmmodel.DietManagerModel;
-import edu.rit.croatia.swen383.g4.dmview.DietManagerView;
 import edu.rit.croatia.swen383.g4.food.BasicFood;
 import edu.rit.croatia.swen383.g4.food.Food;
+import edu.rit.croatia.swen383.g4.food.FoodCollection;
 import edu.rit.croatia.swen383.g4.food.Recipe;
-import edu.rit.croatia.swen383.g4.logger.Logger;
 import edu.rit.croatia.swen383.g4.logs.DailyLog;
+import edu.rit.croatia.swen383.g4.logs.LogCollection;
+import edu.rit.croatia.swen383.g4.user.User;
+import edu.rit.croatia.swen383.g4.util.CsvHandler;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.swing.*;
 
 /**
- * The type Diet manager controller.
+ * The type Diet manager model.
  */
-public class DietManagerController {
+public class DietManagerModel {
 
-  private static final Logger LOGGER = new Logger();
-  private final DietManagerModel model;
-  private final DietManagerView view;
+  private final CsvHandler csvHandler;
+  private final FoodCollection foodCollection;
+  private final LogCollection logCollection;
+  private final User user;
 
   /**
-   * Instantiates a new Diet manager controller.
+   * Instantiates a new Diet manager model.
    *
-   * @param view the view
+   * @param foodCsvFile the food csv file
+   * @param logCsvFile  the log csv file
    */
-  public DietManagerController(DietManagerView view, DietManagerModel model) {
-    this.view = view;
-    this.model = model;
+  public DietManagerModel(String foodCsvFile, String logCsvFile) {
+    foodCollection = new FoodCollection();
+    logCollection = new LogCollection();
+    csvHandler = new CsvHandler(foodCsvFile, logCsvFile);
+    user = new User();
+    loadCsvData();
   }
 
   /**
    * Add basic food.
+   *
+   * @param food the food
    */
-  public void addBasicFood() {
-    BasicFood food = view.getInputBasicFood();
-    model.addBasicFood(food);
-    model.saveCsvData();
-    updateFoodList();
-    view.setFoodSelectionOptions(getFood());
+  public void addBasicFood(BasicFood food) {
+    foodCollection.addFood(food);
   }
 
   /**
    * Add recipe.
-   */
-  public void addRecipe() {
-    Recipe recipe = view.getInputRecipe();
-    model.addRecipe(recipe);
-    model.saveCsvData();
-    updateFoodList();
-  }
-
-  /**
-   * Update food list.
-   */
-  public void updateFoodList() {
-    List<Food> foods = model.getFood();
-    StringBuilder stringBuilder = new StringBuilder();
-    for (Food food : foods) {
-      stringBuilder.append(food.toString()).append("\n");
-    }
-    view.setFoodListText(stringBuilder.toString());
-  }
-
-  /**
-   * Update daily log.
-   */
-  public void updateDailyLog() {
-    DailyLog dailyLog = model.getDailyLogForToday();
-    view.setDailyLogText(
-        "Calories Consumed Today: " +
-            calculateCalories(dailyLog) +
-            "\n" +
-            dailyLog.toString());
-  }
-
-  /**
-   * Gets basic food.
    *
-   * @return the basic food
+   * @param recipe the recipe
    */
-  public List<String> getBasicFood() {
-    return model
-        .getFood()
-        .stream()
-        .filter(food -> food instanceof BasicFood)
-        .map(Food::getName)
-        .collect(Collectors.toList());
+  public void addRecipe(Recipe recipe) {
+    foodCollection.addFood(recipe);
   }
 
   /**
-   * Get food list.
+   * Gets food.
    *
-   * @return the list
+   * @return the food
    */
-  public List<String> getFood() {
-    return model
-        .getFood()
-        .stream()
-        .map(Food::getName)
-        .collect(Collectors.toList());
+  public List<Food> getFoods() {
+    return foodCollection.getFoods();
   }
 
   /**
-   * Gets basic food by name.
+   * Gets food by name.
    *
    * @param foodName the food name
-   * @return the basic food by name
+   * @return the food by name
    */
-  public BasicFood getBasicFoodByName(String foodName) {
-    return model.getBasicFoodByName(foodName);
-  }
-
   public Food getFoodByName(String foodName) {
-    return model.getFoodByName(foodName);
+    return foodCollection.getFoodByName(foodName);
   }
 
   /**
-   * Add log entry.
-   */
-  public void addLogEntry() {
-    String foodName = view.getSelectedFood();
-    double servings;
-    try {
-      servings = view.getServingAmount();
-    } catch (NumberFormatException e) {
-      view.showAlert(
-          "INVALID INPUT",
-          "Serving amount is not valid. Please enter a valid number.");
-      LOGGER.log("Error with servings input: " + e.getMessage());
-      LOGGER.log(e.getStackTrace().toString());
-      return;
-    }
-
-    LocalDate date = view.getSelectedDate();
-    if (date == null) {
-      view.showAlert(
-          "INVALID INPUT",
-          "Selected date invalid. Please select a valid date.");
-      return;
-    }
-
-    Food food = model.getFoodByName(foodName);
-    if (food == null) {
-      view.showAlert(
-          "INVALID INPUT",
-          "Selected food is not a part of the list. Please select a valid food.");
-      return;
-    }
-
-    DailyLog dailyLog = model.getDailyLogByDate(date);
-    if (dailyLog == null) {
-      dailyLog = new DailyLog(date);
-      // dailyLog = new DailyLog(date, model.getUser().getCurrentWeight());
-      model.getLogCollection().addDailyLog(dailyLog);
-    }
-
-    dailyLog.addFood(food, servings);
-    model.saveCsvData();
-    updateDailyLog();
-  } // this method is called when the button is pressed
-
-  /**
-   * Display log for selected date.
-   */
-  public void displayLogForSelectedDate() {
-    LocalDate date = view.getSelectedDate();
-    DailyLog dailyLog = model.getDailyLogByDate(date);
-    if (dailyLog == null)
-      view.setDailyLogText(
-          "No log for selected date.");
-    else {
-      view.setDailyLogText(
-          "Calories Consumed Today: " +
-              calculateCalories(dailyLog) +
-              "\n" +
-              dailyLog.toString());
-    }
-  }
-
-  /**
-   * Calculate calories.
+   * Gets daily log for today.
    *
-   * @param dailyLog the daily log
-   * @return the double
+   * @return the daily log for today
    */
-  public double calculateCalories(DailyLog dailyLog) {
-    int calories = 0;
-    for (Map.Entry<Food, ArrayList<Integer>> entry : dailyLog
-        .getIntakeAmount()
-        .entrySet())
-      calories += entry.getKey().getCalories() * entry.getValue().get(0);
+  public DailyLog getDailyLogForToday() {
+    LocalDate today = LocalDate.now();
+    DailyLog log = logCollection.getDailyLogByDate(today);
+    if (log == null) {
+      log = new DailyLog(today);
+      logCollection.addDailyLog(log);
+    }
+    return log;
+  }
 
-    return calories;
+  /**
+   * Gets daily log by date.
+   *
+   * @param date the date
+   * @return the daily log by date
+   */
+  public DailyLog getDailyLogByDate(LocalDate date) {
+    return logCollection.getDailyLogByDate(date);
+  }
+
+  /**
+   * Gets log collection.
+   *
+   * @return the log collection
+   */
+  public LogCollection getLogCollection() {
+    return logCollection;
+  }
+
+  /**
+   * Get daily calorie intake.
+   */
+  public double getDailyCalorieIntake() {
+    return user.getDailyCalorieIntake();
+  }
+
+  public void addDailyCalorieIntake(double calorieIntake) {
+    user.updateDailyCalorieIntake(calorieIntake);
+  }
+
+  private void loadCsvData() {
+    csvHandler.loadFoodData(foodCollection);
+    csvHandler.loadLogData(logCollection, foodCollection);
+  }
+
+  /**
+   * Save csv data.
+   */
+  public void saveCsvData() {
+    csvHandler.saveFoodData(foodCollection);
+    csvHandler.saveLogData(logCollection);
   }
 }
