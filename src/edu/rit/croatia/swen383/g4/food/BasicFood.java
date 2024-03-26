@@ -12,7 +12,7 @@ public class BasicFood implements Food {
   private double protein;
 
   /**
-   * Instantiates a new Basic food.
+   * Instantiates new Basic food.
    *
    * @param foodName the food name
    * @param calories the calories
@@ -128,15 +128,15 @@ public class BasicFood implements Food {
     return (
       "Basic Food: \t\n" +
       "\t Food Name = " +
-      foodName +
+      getName() +
       "\t Calories = " +
-      calories +
+      getCalories() +
       "\t Fat = " +
-      fat +
+      getFat() +
       "\t Carbs = " +
-      carbs +
+      getCarbs() +
       "\t Protein = " +
-      protein
+      getProtein()
     );
   }
 }
