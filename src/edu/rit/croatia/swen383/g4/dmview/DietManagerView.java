@@ -30,6 +30,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+private Label[] ingredientLabels;
+    private Label[] amountLabels;
+
 
 /**
  * The type Diet manager view.
@@ -187,6 +190,8 @@ public class DietManagerView extends Application {
     numOfIngredientsField = new TextField();
     ingredientComboBoxes = new ComboBox[5];
     ingredientServingFields = new TextField[5];
+    ingredientLabels = new Label[5];
+        amountLabels = new Label[5];
     setIngredientsButton = new Button("Add Ingredients");
     addRecipeButton = new Button("Add Recipe");
 
@@ -339,12 +344,8 @@ public class DietManagerView extends Application {
 
   private void updateRecipeIngredients() {
     if (getNumberOfIngredients() > 5 || getNumberOfIngredients() < 1) {
-      Alert alert = new Alert(Alert.AlertType.WARNING);
-      alert.setTitle("RECONFIGURE INGREDIENT AMOUNT");
-      alert.setHeaderText("You have entered an invalid number of ingredients");
-      alert.setContentText("Please enter a number between 1 and 5");
-      alert.showAndWait();
-
+      showAlert("You have entered an invalid number of ingredients",
+                    "Please enter a number between 1 and 5", Alert.AlertType.WARNING);
       return;
     }
 
@@ -357,14 +358,16 @@ public class DietManagerView extends Application {
       TextField textField = new TextField();
       ingredientComboBoxes[i] = comboBox;
       ingredientServingFields[i] = textField;
-      recipeInputGrid.addRow(
-          2 + i,
-          new Label("Ingredient " + (i + 1) + ":"),
-          ingredientComboBoxes[i],
-          new Label("Amount:"),
-          ingredientServingFields[i]);
+      ingredientLabels[i] = new Label("Ingredient " + (i + 1) + ":");
+            amountLabels[i] = new Label("Amount:");
+
+            recipeInputGrid.addRow(2 + i, ingredientLabels[i], ingredientComboBoxes[i],
+                    amountLabels[i], ingredientServingFields[i]);
+
     }
     recipeInputGrid.add(addRecipeButton, 1, 2 + numberOfIngredients);
+            addRecipeButton.setOnAction(event -> controller.addRecipe());
+
   }
 
   /**
@@ -467,6 +470,29 @@ public class DietManagerView extends Application {
   public LocalDate getSelectedDate() {
     return datePicker.getValue();
   }
+public void clearFoodInputs() {
+        foodNameField.clear();
+        caloriesField.clear();
+        fatField.clear();
+        carbohydratesField.clear();
+        proteinField.clear();
+    }
+
+    public void clearRecipeInputFields() {
+        recipeNameField.clear();
+        numOfIngredientsField.clear();
+
+        for (int i = 0; i < ingredientComboBoxes.length; i++) {
+            if (ingredientComboBoxes[i] != null) {
+                ingredientComboBoxes[i].setDisable(true);
+                ingredientServingFields[i].setDisable(true);
+                recipeInputGrid.getChildren().removeAll(ingredientComboBoxes[i], ingredientServingFields[i],
+                        ingredientLabels[i], amountLabels[i]);
+            }
+        }
+
+        recipeInputGrid.getChildren().remove(addRecipeButton);
+    }
 
   /**
    * Show alert.
@@ -474,10 +500,11 @@ public class DietManagerView extends Application {
    * @param title   the title
    * @param content the content
    */
-  public void showAlert(String title, String content) {
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setContentText(content);
-    alert.showAndWait();
+  public void showAlert(String title, String content, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+
   }
 }
