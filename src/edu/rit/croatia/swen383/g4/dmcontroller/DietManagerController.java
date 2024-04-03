@@ -71,7 +71,9 @@ public class DietManagerController {
    * Update daily log.
    */
   public void updateDailyLog() {
-    DailyLog dailyLog = model.getDailyLogForToday();
+    // getDailyLogByDate BASED on the SELECTED DATE
+    DailyLog dailyLog = model.getDailyLogByDate(view.getSelectedDate());
+    System.out.println(dailyLog);
     view.setDailyLogText(
       "Calories Consumed Today: " +
       calculateCalories(dailyLog) +
@@ -172,6 +174,7 @@ public class DietManagerController {
    */
   public double calculateCalories(DailyLog dailyLog) {
     int calories = 0;
+    if (dailyLog == null) return 0;
     for (Map.Entry<Food, Double> entry : dailyLog
       .getIntakeAndServing()
       .entrySet()) calories += entry.getKey().getCalories() * entry.getValue();
