@@ -49,7 +49,7 @@ public class DietManagerView extends Application {
   private TextField recipeNameField;
   private TextField numOfIngredientsField;
   private Button setIngredientsButton;
-  private ComboBox[] ingredientComboBoxes;
+private ComboBox<String>[] ingredientComboBoxes;
   private TextField[] ingredientServingFields;
   private Button addRecipeButton;
 
@@ -153,7 +153,16 @@ public class DietManagerView extends Application {
     // Add event handlers
     addFoodButton.setOnAction(event -> controller.addBasicFood());
     setIngredientsButton.setOnAction(event -> updateRecipeIngredients());
-    addRecipeButton.setOnAction(event -> controller.addRecipe());
+   addRecipeButton.setOnAction(event -> {
+    String recipeName = recipeNameField.getText();
+    Map<String, Double> ingredients = new HashMap<>();
+    for (int i = 0; i < getNumberOfIngredients(); i++) {
+        String ingredientName = ingredientComboBoxes[i].getValue();
+        Double servingSize = Double.valueOf(ingredientServingFields[i].getText());
+        ingredients.put(ingredientName, servingSize);
+    }
+    controller.createAndAddRecipe(recipeName, ingredients);
+});
     addLogEntryButton.setOnAction(event -> controller.addLogEntry());
     datePicker.setOnAction(event -> controller.displayLogForSelectedDate());
 
@@ -403,7 +412,16 @@ public class DietManagerView extends Application {
       );
     }
     recipeInputGrid.add(addRecipeButton, 1, 2 + numberOfIngredients);
-    addRecipeButton.setOnAction(event -> controller.addRecipe());
+    addRecipeButton.setOnAction(event -> {
+    String recipeName = recipeNameField.getText();
+    Map<String, Double> ingredients = new HashMap<>();
+    for (int i = 0; i < getNumberOfIngredients(); i++) {
+        String ingredientName = ingredientComboBoxes[i].getValue();
+        Double servingSize = Double.parseDouble(ingredientServingFields[i].getText());
+        ingredients.put(ingredientName, servingSize);
+    }
+    controller.createAndAddRecipe(recipeName, ingredients);
+});
   }
 
   /**
@@ -411,31 +429,7 @@ public class DietManagerView extends Application {
    *
    * @return the input recipe
    */
-  public Recipe getInputRecipe() {
-    String recipeName = recipeNameField.getText();
-    Map<Food, Double> foodsMap = new HashMap<>();
-
-    for (int i = 0; i < ingredientComboBoxes.length; i++) {
-      Object selectedItem =
-        ingredientComboBoxes[i].getSelectionModel().getSelectedItem();
-      if (selectedItem == null) {
-        continue;
-      }
-      String foodName = selectedItem.toString();
-      Food food = controller.getFoodByName(foodName);
-      double servings = Double.parseDouble(
-        ingredientServingFields[i].getText()
-      );
-      foodsMap.put(food, servings);
-    }
-
-    List<Food> foods = new ArrayList<>();
-    for (Map.Entry<Food, Double> entry : foodsMap.entrySet()) {
-      foods.add(entry.getKey());
-    }
-
-    return new Recipe(recipeName, foodsMap, foods);
-  }
+  
 
   /**
    * Sets food list text.

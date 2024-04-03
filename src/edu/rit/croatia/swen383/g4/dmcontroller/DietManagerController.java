@@ -55,20 +55,23 @@ public class DietManagerController {
   /**
    * Add recipe.
    */
-  public void addRecipe() {
-    Recipe recipe = view.getInputRecipe();
+public void createAndAddRecipe(String recipeName, Map<String, Double> ingredientNamesAndServings) {
+    Map<Food, Double> ingredients = new HashMap<>();
+    for (Map.Entry<String, Double> entry : ingredientNamesAndServings.entrySet()) {
+        Food food = model.getFoodByName(entry.getKey());
+        if (food != null) {
+            ingredients.put(food, entry.getValue());
+        }
+    }
+    Recipe recipe = new Recipe(recipeName, ingredients);
     model.addRecipe(recipe);
     model.saveCsvData();
     updateFoodList();
     view.setFoodSelectionOptions(getFood());
-    // Alert user that the recipe was added successfully
-    view.showAlert(
-      recipe.getName() + " Added!",
-      "The recipe was added successfully.",
-      Alert.AlertType.INFORMATION
-    );
-    view.clearRecipeInputFields();
-  }
+    view.showAlert("Recipe Added", "The recipe was successfully added.", Alert.AlertType.INFORMATION);
+}
+
+
 
   /**
    * Update food list.
