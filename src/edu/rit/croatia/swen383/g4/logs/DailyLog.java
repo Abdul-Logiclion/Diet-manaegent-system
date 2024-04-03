@@ -89,8 +89,16 @@ public class DailyLog {
    * @param food  the food
    * @param count the count
    */
-  public void addFood(Food food, double count) {
-    intakeAmount.put(food, count);
+  public void addFood(Food food, double servings) {
+    // Check if the food is already in the log for the day
+    if (intakeAmount.containsKey(food)) {
+      // If it is, add the new servings to the existing servings
+      double existingServings = intakeAmount.get(food);
+      intakeAmount.put(food, existingServings + servings);
+    } else {
+      // If not, simply add the new food with its servings
+      intakeAmount.put(food, servings);
+    }
   }
 
   @Override
