@@ -46,9 +46,10 @@ public class DietManagerController {
 
     view.setFoodSelectionOptions(getFood());
     view.showAlert(
-        food.getName() + " Added!",
-        "The food was added successfully.",
-        Alert.AlertType.INFORMATION);
+      food.getName() + " Added!",
+      "The food was added successfully.",
+      Alert.AlertType.INFORMATION
+    );
   }
 
   /**
@@ -60,12 +61,12 @@ public class DietManagerController {
     model.saveCsvData();
     updateFoodList();
     view.setFoodSelectionOptions(getFood());
-
     // Alert user that the recipe was added successfully
     view.showAlert(
-        recipe.getName() + " Added!",
-        "The recipe was added successfully.",
-        Alert.AlertType.INFORMATION);
+      recipe.getName() + " Added!",
+      "The recipe was added successfully.",
+      Alert.AlertType.INFORMATION
+    );
     view.clearRecipeInputFields();
   }
 
@@ -87,12 +88,13 @@ public class DietManagerController {
   public void updateDailyLog() {
     // getDailyLogByDate BASED on the SELECTED DATE
     DailyLog dailyLog = model.getDailyLogByDate(view.getSelectedDate());
-    // System.out.println(dailyLog);
+    //System.out.println(dailyLog);
     view.setDailyLogText(
-        "Calories Consumed Today: " +
-            calculateCalories(dailyLog) +
-            "\n" +
-            dailyLog.toString());
+      "Calories Consumed Today: " +
+      calculateCalories(dailyLog) +
+      "\n" +
+      dailyLog.toString()
+    );
   }
 
   /**
@@ -102,10 +104,10 @@ public class DietManagerController {
    */
   public List<String> getFood() {
     return model
-        .getFoods()
-        .stream()
-        .map(Food::getName)
-        .collect(Collectors.toList());
+      .getFoods()
+      .stream()
+      .map(Food::getName)
+      .collect(Collectors.toList());
   }
 
   public Food getFoodByName(String foodName) {
@@ -122,9 +124,10 @@ public class DietManagerController {
       servings = view.getServingAmount();
     } catch (NumberFormatException e) {
       view.showAlert(
-          "INVALID INPUT",
-          "Serving amount is not valid. Please enter a valid number.",
-          Alert.AlertType.ERROR);
+        "INVALID INPUT",
+        "Serving amount is not valid. Please enter a valid number.",
+        Alert.AlertType.ERROR
+      );
 
       LOGGER.log("Error with servings input: " + e.getMessage());
       LOGGER.log(e.getStackTrace().toString());
@@ -134,16 +137,21 @@ public class DietManagerController {
     LocalDate date = view.getSelectedDate();
     if (date == null) {
       view.showAlert(
-          "INVALID INPUT",
-          "Selected date invalid. Please select a valid date.");
+        "INVALID INPUT",
+        "Selected date invalid. Please select a valid date.",
+        Alert.AlertType.ERROR
+      );
       return;
     }
 
     Food food = model.getFoodByName(foodName);
     if (food == null) {
       view.showAlert(
-          "INVALID INPUT",
-          "Selected food is not a part of the list. Please select a valid food.");
+        "INVALID INPUT",
+        "Selected food is not a part of the list. Please select a valid food.",
+        Alert.AlertType.ERROR
+      );
+
       return;
     }
 
@@ -165,15 +173,15 @@ public class DietManagerController {
   public void displayLogForSelectedDate() {
     LocalDate date = view.getSelectedDate();
     DailyLog dailyLog = model.getDailyLogByDate(date);
-    if (dailyLog == null)
+    if (dailyLog == null) view.setDailyLogText(
+      "No log for selected date."
+    ); else {
       view.setDailyLogText(
-          "No log for selected date.");
-    else {
-      view.setDailyLogText(
-          "Calories Consumed Today: " +
-              calculateCalories(dailyLog) +
-              "\n" +
-              dailyLog.toString());
+        "Calories Consumed Today: " +
+        calculateCalories(dailyLog) +
+        "\n" +
+        dailyLog.toString()
+      );
     }
     view.updatePieChart();
   }
@@ -186,12 +194,10 @@ public class DietManagerController {
    */
   public double calculateCalories(DailyLog dailyLog) {
     int calories = 0;
-    if (dailyLog == null)
-      return 0;
+    if (dailyLog == null) return 0;
     for (Map.Entry<Food, Double> entry : dailyLog
-        .getIntakeAndServing()
-        .entrySet())
-      calories += entry.getKey().getCalories() * entry.getValue();
+      .getIntakeAndServing()
+      .entrySet()) calories += entry.getKey().getCalories() * entry.getValue();
 
     return calories;
   }
@@ -213,16 +219,14 @@ public class DietManagerController {
       double totalFat = 0;
       double totalCarbs = 0;
       double totalProtein = 0;
-
       for (Map.Entry<Food, Double> entry : dailyLog
-          .getIntakeAndServing()
-          .entrySet()) {
+        .getIntakeAndServing()
+        .entrySet()) {
         totalCalories += entry.getKey().getCalories() * entry.getValue();
         totalFat += entry.getKey().getFat() * entry.getValue();
         totalCarbs += entry.getKey().getCarbs() * entry.getValue();
         totalProtein += entry.getKey().getProtein() * entry.getValue();
       }
-
       nutrients.put("Calories", totalCalories);
       nutrients.put("Fat", totalFat);
       nutrients.put("Carbohydrates", totalCarbs);
