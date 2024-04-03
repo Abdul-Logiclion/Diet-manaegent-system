@@ -8,6 +8,7 @@ import edu.rit.croatia.swen383.g4.logs.DailyLog;
 import edu.rit.croatia.swen383.g4.logs.LogCollection;
 import edu.rit.croatia.swen383.g4.user.User;
 import edu.rit.croatia.swen383.g4.util.CsvHandler;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -60,6 +61,7 @@ public class DietManagerModel {
    */
   public List<Food> getFoods() {
     return foodCollection.getFoods();
+
   }
 
   /**
@@ -94,6 +96,10 @@ public class DietManagerModel {
    * @return the daily log by date
    */
   public DailyLog getDailyLogByDate(LocalDate date) {
+    if ((logCollection.getDailyLogByDate(date)) == null) {
+      DailyLog log = new DailyLog(date);
+      logCollection.addDailyLog(log);
+    }
     return logCollection.getDailyLogByDate(date);
   }
 
@@ -104,6 +110,7 @@ public class DietManagerModel {
    */
   public LogCollection getLogCollection() {
     return logCollection;
+
   }
 
   /**
@@ -129,4 +136,5 @@ public class DietManagerModel {
     csvHandler.saveFoodData(foodCollection);
     csvHandler.saveLogData(logCollection);
   }
+
 }
