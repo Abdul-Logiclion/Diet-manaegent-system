@@ -30,9 +30,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-private Label[] ingredientLabels;
-    private Label[] amountLabels;
-
 
 /**
  * The type Diet manager view.
@@ -68,12 +65,16 @@ public class DietManagerView extends Application {
   private TextField servingAmountField;
   private DatePicker datePicker;
   private Button addLogEntryButton;
+  private Label[] ingredientLabels;
+  private Label[] amountLabels;
 
   @Override
   public void init() {
-    controller = new DietManagerController(
+    controller =
+      new DietManagerController(
         this,
-        new DietManagerModel("foods.csv", "log.csv"));
+        new DietManagerModel("foods.csv", "log.csv")
+      );
   }
 
   @Override
@@ -99,12 +100,15 @@ public class DietManagerView extends Application {
 
     VBox foodArea = new VBox(10, topInputGrid, foodListTextArea);
     foodArea.setBorder(
-        new Border(
-            new BorderStroke(
-                Color.BLACK,
-                BorderStrokeStyle.SOLID,
-                new CornerRadii(3),
-                new BorderWidths(0.2))));
+      new Border(
+        new BorderStroke(
+          Color.BLACK,
+          BorderStrokeStyle.SOLID,
+          new CornerRadii(3),
+          new BorderWidths(0.2)
+        )
+      )
+    );
     foodArea.setPadding(new Insets(10));
 
     Label foodLabel = new Label("Food Addition and Display");
@@ -112,12 +116,15 @@ public class DietManagerView extends Application {
 
     VBox logArea = new VBox(10, logInputArea, dailyLogTextArea);
     logArea.setBorder(
-        new Border(
-            new BorderStroke(
-                Color.BLACK,
-                BorderStrokeStyle.SOLID,
-                new CornerRadii(3),
-                new BorderWidths(0.2))));
+      new Border(
+        new BorderStroke(
+          Color.BLACK,
+          BorderStrokeStyle.SOLID,
+          new CornerRadii(3),
+          new BorderWidths(0.2)
+        )
+      )
+    );
     logArea.setPadding(new Insets(10));
 
     Label logLabel = new Label("Daily Log Addition and Display");
@@ -134,11 +141,14 @@ public class DietManagerView extends Application {
     HBox root = new HBox(10, mainLayout, statistics);
     root.setPadding(new Insets(10));
     root.setBackground(
-        new Background(
-            new BackgroundFill(
-                Paint.valueOf("#ffffff"),
-                CornerRadii.EMPTY,
-                new Insets(10))));
+      new Background(
+        new BackgroundFill(
+          Paint.valueOf("#ffffff"),
+          CornerRadii.EMPTY,
+          new Insets(10)
+        )
+      )
+    );
 
     // Add event handlers
     addFoodButton.setOnAction(event -> controller.addBasicFood());
@@ -191,7 +201,7 @@ public class DietManagerView extends Application {
     ingredientComboBoxes = new ComboBox[5];
     ingredientServingFields = new TextField[5];
     ingredientLabels = new Label[5];
-        amountLabels = new Label[5];
+    amountLabels = new Label[5];
     setIngredientsButton = new Button("Add Ingredients");
     addRecipeButton = new Button("Add Recipe");
 
@@ -204,10 +214,11 @@ public class DietManagerView extends Application {
 
     grid.addRow(0, new Label("Recipe Name:"), recipeNameField);
     grid.addRow(
-        1,
-        new Label("Number of Ingredients (max 5):"),
-        numOfIngredientsField,
-        setIngredientsButton);
+      1,
+      new Label("Number of Ingredients (max 5):"),
+      numOfIngredientsField,
+      setIngredientsButton
+    );
 
     return grid;
   }
@@ -223,38 +234,47 @@ public class DietManagerView extends Application {
     Map<String, Double> nutrients = this.controller.getNutrients();
 
     ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
-        new PieChart.Data(
-            (String) nutrients.keySet().toArray()[0],
-            nutrients.get("Calories")),
-        new PieChart.Data(
-            (String) nutrients.keySet().toArray()[1],
-            nutrients.get("Fat")),
-        new PieChart.Data(
-            (String) nutrients.keySet().toArray()[2],
-            nutrients.get("Carbohydrates")),
-        new PieChart.Data(
-            (String) nutrients.keySet().toArray()[3],
-            nutrients.get("Protein")));
+      new PieChart.Data(
+        (String) nutrients.keySet().toArray()[0],
+        nutrients.get("Calories")
+      ),
+      new PieChart.Data(
+        (String) nutrients.keySet().toArray()[1],
+        nutrients.get("Fat")
+      ),
+      new PieChart.Data(
+        (String) nutrients.keySet().toArray()[2],
+        nutrients.get("Carbohydrates")
+      ),
+      new PieChart.Data(
+        (String) nutrients.keySet().toArray()[3],
+        nutrients.get("Protein")
+      )
+    );
     nutritionChart = new PieChart(pieChartData);
     pieChartData.forEach(data -> {
       if (data.getName().equals("Calories")) {
         data
-            .nameProperty()
-            .bind(
-                Bindings.concat(
-                    data.getName(),
-                    " ",
-                    String.format("%.2f", data.pieValueProperty().get()),
-                    "kcal"));
+          .nameProperty()
+          .bind(
+            Bindings.concat(
+              data.getName(),
+              " ",
+              String.format("%.2f", data.pieValueProperty().get()),
+              "kcal"
+            )
+          );
       } else {
         data
-            .nameProperty()
-            .bind(
-                Bindings.concat(
-                    data.getName(),
-                    " ",
-                    String.format("%.2f", data.pieValueProperty().get()),
-                    "g"));
+          .nameProperty()
+          .bind(
+            Bindings.concat(
+              data.getName(),
+              " ",
+              String.format("%.2f", data.pieValueProperty().get()),
+              "g"
+            )
+          );
       }
     });
 
@@ -270,39 +290,48 @@ public class DietManagerView extends Application {
 
     Map<String, Double> nutrients = this.controller.getNutrients();
     ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
-        new PieChart.Data(
-            (String) nutrients.keySet().toArray()[0],
-            nutrients.get("Calories")),
-        new PieChart.Data(
-            (String) nutrients.keySet().toArray()[1],
-            nutrients.get("Fat")),
-        new PieChart.Data(
-            (String) nutrients.keySet().toArray()[2],
-            nutrients.get("Carbohydrates")),
-        new PieChart.Data(
-            (String) nutrients.keySet().toArray()[3],
-            nutrients.get("Protein")));
+      new PieChart.Data(
+        (String) nutrients.keySet().toArray()[0],
+        nutrients.get("Calories")
+      ),
+      new PieChart.Data(
+        (String) nutrients.keySet().toArray()[1],
+        nutrients.get("Fat")
+      ),
+      new PieChart.Data(
+        (String) nutrients.keySet().toArray()[2],
+        nutrients.get("Carbohydrates")
+      ),
+      new PieChart.Data(
+        (String) nutrients.keySet().toArray()[3],
+        nutrients.get("Protein")
+      )
+    );
     pieChart.setData(pieChartData);
 
     pieChartData.forEach(data -> {
       if (data.getName().equals("Calories")) {
         data
-            .nameProperty()
-            .bind(
-                Bindings.concat(
-                    data.getName(),
-                    " ",
-                    String.format("%.2f", data.pieValueProperty().get()),
-                    " kcal"));
+          .nameProperty()
+          .bind(
+            Bindings.concat(
+              data.getName(),
+              " ",
+              String.format("%.2f", data.pieValueProperty().get()),
+              " kcal"
+            )
+          );
       } else {
         data
-            .nameProperty()
-            .bind(
-                Bindings.concat(
-                    data.getName(),
-                    " ",
-                    String.format("%.2f", data.pieValueProperty().get()),
-                    " g"));
+          .nameProperty()
+          .bind(
+            Bindings.concat(
+              data.getName(),
+              " ",
+              String.format("%.2f", data.pieValueProperty().get()),
+              " g"
+            )
+          );
       }
     });
   }
@@ -320,15 +349,16 @@ public class DietManagerView extends Application {
     addLogEntryButton = new Button("Add Log Entry");
 
     hbox
-        .getChildren()
-        .addAll(
-            new Label("Select Food:"),
-            foodSelectionComboBox,
-            new Label("Serving Amount:"),
-            servingAmountField,
-            new Label("Select Date:"),
-            datePicker,
-            addLogEntryButton);
+      .getChildren()
+      .addAll(
+        new Label("Select Food:"),
+        foodSelectionComboBox,
+        new Label("Serving Amount:"),
+        servingAmountField,
+        new Label("Select Date:"),
+        datePicker,
+        addLogEntryButton
+      );
 
     return hbox;
   }
@@ -344,8 +374,11 @@ public class DietManagerView extends Application {
 
   private void updateRecipeIngredients() {
     if (getNumberOfIngredients() > 5 || getNumberOfIngredients() < 1) {
-      showAlert("You have entered an invalid number of ingredients",
-                    "Please enter a number between 1 and 5", Alert.AlertType.WARNING);
+      showAlert(
+        "You have entered an invalid number of ingredients",
+        "Please enter a number between 1 and 5",
+        Alert.AlertType.WARNING
+      );
       return;
     }
 
@@ -359,15 +392,18 @@ public class DietManagerView extends Application {
       ingredientComboBoxes[i] = comboBox;
       ingredientServingFields[i] = textField;
       ingredientLabels[i] = new Label("Ingredient " + (i + 1) + ":");
-            amountLabels[i] = new Label("Amount:");
+      amountLabels[i] = new Label("Amount:");
 
-            recipeInputGrid.addRow(2 + i, ingredientLabels[i], ingredientComboBoxes[i],
-                    amountLabels[i], ingredientServingFields[i]);
-
+      recipeInputGrid.addRow(
+        2 + i,
+        ingredientLabels[i],
+        ingredientComboBoxes[i],
+        amountLabels[i],
+        ingredientServingFields[i]
+      );
     }
     recipeInputGrid.add(addRecipeButton, 1, 2 + numberOfIngredients);
-            addRecipeButton.setOnAction(event -> controller.addRecipe());
-
+    addRecipeButton.setOnAction(event -> controller.addRecipe());
   }
 
   /**
@@ -380,14 +416,16 @@ public class DietManagerView extends Application {
     Map<Food, Double> foodsMap = new HashMap<>();
 
     for (int i = 0; i < ingredientComboBoxes.length; i++) {
-      Object selectedItem = ingredientComboBoxes[i].getSelectionModel().getSelectedItem();
+      Object selectedItem =
+        ingredientComboBoxes[i].getSelectionModel().getSelectedItem();
       if (selectedItem == null) {
         continue;
       }
       String foodName = selectedItem.toString();
       Food food = controller.getFoodByName(foodName);
       double servings = Double.parseDouble(
-          ingredientServingFields[i].getText());
+        ingredientServingFields[i].getText()
+      );
       foodsMap.put(food, servings);
     }
 
@@ -470,29 +508,36 @@ public class DietManagerView extends Application {
   public LocalDate getSelectedDate() {
     return datePicker.getValue();
   }
-public void clearFoodInputs() {
-        foodNameField.clear();
-        caloriesField.clear();
-        fatField.clear();
-        carbohydratesField.clear();
-        proteinField.clear();
+
+  public void clearFoodInputs() {
+    foodNameField.clear();
+    caloriesField.clear();
+    fatField.clear();
+    carbohydratesField.clear();
+    proteinField.clear();
+  }
+
+  public void clearRecipeInputFields() {
+    recipeNameField.clear();
+    numOfIngredientsField.clear();
+
+    for (int i = 0; i < ingredientComboBoxes.length; i++) {
+      if (ingredientComboBoxes[i] != null) {
+        ingredientComboBoxes[i].setDisable(true);
+        ingredientServingFields[i].setDisable(true);
+        recipeInputGrid
+          .getChildren()
+          .removeAll(
+            ingredientComboBoxes[i],
+            ingredientServingFields[i],
+            ingredientLabels[i],
+            amountLabels[i]
+          );
+      }
     }
 
-    public void clearRecipeInputFields() {
-        recipeNameField.clear();
-        numOfIngredientsField.clear();
-
-        for (int i = 0; i < ingredientComboBoxes.length; i++) {
-            if (ingredientComboBoxes[i] != null) {
-                ingredientComboBoxes[i].setDisable(true);
-                ingredientServingFields[i].setDisable(true);
-                recipeInputGrid.getChildren().removeAll(ingredientComboBoxes[i], ingredientServingFields[i],
-                        ingredientLabels[i], amountLabels[i]);
-            }
-        }
-
-        recipeInputGrid.getChildren().remove(addRecipeButton);
-    }
+    recipeInputGrid.getChildren().remove(addRecipeButton);
+  }
 
   /**
    * Show alert.
@@ -500,11 +545,14 @@ public void clearFoodInputs() {
    * @param title   the title
    * @param content the content
    */
-  public void showAlert(String title, String content, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        alert.showAndWait();
-
+  public void showAlert(
+    String title,
+    String content,
+    Alert.AlertType alertType
+  ) {
+    Alert alert = new Alert(alertType);
+    alert.setHeaderText(title);
+    alert.setContentText(content);
+    alert.showAndWait();
   }
 }
