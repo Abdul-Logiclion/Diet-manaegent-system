@@ -1,0 +1,16 @@
+2024-04-21 20:31:19 - Error with servings input: empty String
+2024-04-21 20:31:19 - [Ljava.lang.StackTraceElement;@2f77aa4a
+2024-04-21 21:44:46 - Error with servings input: empty String
+2024-04-21 21:44:46 - [Ljava.lang.StackTraceElement;@6f0e07e2
+2024-04-21 21:52:47 - Error with servings input: empty String
+2024-04-21 21:52:47 - [Ljava.lang.StackTraceElement;@3d828ae1
+2024-04-22 03:42:41 - Error with servings input: empty String
+2024-04-22 03:42:41 - [Ljava.lang.StackTraceElement;@1e881587
+2024-04-22 07:44:04 - Error with servings input: empty String
+2024-04-22 07:44:04 - [Ljava.lang.StackTraceElement;@3b010c
+2024-04-22 08:35:40 - Error with servings input: empty String
+2024-04-22 08:35:40 - [Ljava.lang.StackTraceElement;@7a5e7108
+2024-04-22 09:07:57 - Error with servings input: empty String
+2024-04-22 09:07:57 - [Ljava.lang.StackTraceElement;@29ee024f
+2024-04-22 22:59:56 - Error with servings input: empty String
+2024-04-22 22:59:57 - [Ljava.lang.StackTraceElement;@ce7a361

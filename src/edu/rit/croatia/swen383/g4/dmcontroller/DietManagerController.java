@@ -24,6 +24,7 @@ public class DietManagerController {
   private final DietManagerModel model;
   private final DietManagerView view;
 
+
   /**
    * Instantiates a new Diet manager controller.
    *
@@ -32,6 +33,7 @@ public class DietManagerController {
   public DietManagerController(DietManagerView view, DietManagerModel model) {
     this.view = view;
     this.model = model;
+
   }
 
   /**
@@ -91,7 +93,6 @@ public void createAndAddRecipe(String recipeName, Map<String, Double> ingredient
   public void updateDailyLog() {
     // getDailyLogByDate BASED on the SELECTED DATE
     DailyLog dailyLog = model.getDailyLogByDate(view.getSelectedDate());
-    //System.out.println(dailyLog);
     view.setDailyLogText(
       "Calories Consumed Today: " +
       calculateCalories(dailyLog) +
@@ -111,6 +112,14 @@ public void createAndAddRecipe(String recipeName, Map<String, Double> ingredient
       .stream()
       .map(Food::getName)
       .collect(Collectors.toList());
+  }
+
+  public List<String> getExercise() {
+    return model
+            .getFoods()
+            .stream()
+            .map(Food::getName)
+            .collect(Collectors.toList());
   }
 
   public Food getFoodByName(String foodName) {
@@ -167,7 +176,7 @@ public void createAndAddRecipe(String recipeName, Map<String, Double> ingredient
     dailyLog.addFood(food, servings);
     model.saveCsvData();
     updateDailyLog();
-    view.updatePieChart();
+   // view.updatePieChart();
   } // this method is called when the button is pressed
 
   /**
@@ -180,13 +189,15 @@ public void createAndAddRecipe(String recipeName, Map<String, Double> ingredient
       "No log for selected date."
     ); else {
       view.setDailyLogText(
-        "Calories Consumed Today: " +
+        "Calories Consumed To: " + "\n" +   "Calories Burned Today: "+"\n"+
         calculateCalories(dailyLog) +
         "\n" +
+
         dailyLog.toString()
+
       );
     }
-    view.updatePieChart();
+   // view.updatePieChart();
   }
 
   /**

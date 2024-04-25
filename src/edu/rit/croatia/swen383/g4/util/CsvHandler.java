@@ -10,11 +10,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.*;
+import  edu.rit.croatia.swen383.g4.dmview.DietManagerView;
+
 
 /**
  * The type Csv handler.
  */
 public class CsvHandler {
+
+  public  static List<String> exercises=new ArrayList<String>();
 
   private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(
     "yyyy-M-d"
@@ -22,6 +26,7 @@ public class CsvHandler {
   private static final Logger LOGGER = new Logger();
   private final String foodFileName;
   private final String logFileName;
+  private final String exerciseFileName;
   private Stream<String> lines = null;
   private PrintWriter writer = null;
 
@@ -31,10 +36,12 @@ public class CsvHandler {
    * @param foodFileName the food file name
    * @param logFileName  the log file name
    */
-  public CsvHandler(String foodFileName, String logFileName) {
+  public CsvHandler(String foodFileName, String logFileName,String exerciseFileName) {
     this.foodFileName = foodFileName;
     this.logFileName = logFileName;
-  }
+    this.exerciseFileName=exerciseFileName;
+
+      }
 
   /**
    * Load food data.
@@ -106,8 +113,8 @@ public class CsvHandler {
    * @param foodCollection the food collection
    */
   public void loadLogData(
-    LogCollection logCollection,
-    FoodCollection foodCollection
+          LogCollection logCollection,
+          FoodCollection foodCollection
   ) {
     // Add user integration for weight, where I check for 'w' can also add an enum Identifier
 
@@ -115,30 +122,39 @@ public class CsvHandler {
       lines = Files.lines(Paths.get(logFileName));
 
       lines
-        .map(line -> line.split(","))
-        .forEach(row -> {
-          String dateString = String.format("%s-%s-%s", row[0], row[1], row[2]);
-          LocalDate date = LocalDate.parse(dateString, DATE_FORMAT);
+              .map(line -> line.split(","))
+              .forEach(row -> {
+                   String dateString = String.format("%s-%s-%s", row[0], row[1], row[2]);
+                LocalDate date = LocalDate.parse(dateString, DATE_FORMAT);
 
-          if ("f".equals(row[3])) {
-            String foodName = row[4];
-            double count = Double.parseDouble(row[5]);
-            Food food = foodCollection
-              .getFoods()
-              .stream()
-              .filter(f -> f.getName().equals(foodName))
-              .findFirst()
-              .orElse(null);
-            if (food != null) {
-              DailyLog log = logCollection.getDailyLogByDate(date);
-              if (log == null) {
-                log = new DailyLog(date);
-                logCollection.addDailyLog(log);
-              }
-              log.addFood(food, count);
-            }
-          }
-        });
+
+                if ("f".equals(row[3])) {
+                  String foodName = row[4];
+                  double count = Double.parseDouble(row[5]);
+                  Food food = foodCollection
+                          .getFoods()
+                          .stream()
+                          .filter(f -> f.getName().equals(foodName))
+                          .findFirst()
+                          .orElse(null);
+                  if (food != null) {
+                    DailyLog log = logCollection.getDailyLogByDate(date);
+                    if (log == null) {
+                      log = new DailyLog(date);
+                      logCollection.addDailyLog(log);
+                    }
+                    log.addFood(food, count);
+                  }
+                }
+                else {
+                  exercises.add(String.join(",", row));
+
+                }
+
+
+              });
+
+
     } catch (IOException e) {
       LOGGER.log("Error reading log CSV file: " + logFileName);
       e.printStackTrace();
@@ -181,7 +197,6 @@ public class CsvHandler {
             recipe.getName(),
             String.join(",", basicFoodNamesAndQuantities)
           );
-
           writer.println(line);
         }
       }
@@ -200,7 +215,9 @@ public class CsvHandler {
    */
   public void saveLogData(LogCollection logCollection) {
     try {
+
       writer = new PrintWriter(Files.newBufferedWriter(Paths.get(logFileName)));
+
 
       for (DailyLog log : logCollection.getDailyLogs()) {
         LocalDate date = log.getDate();
@@ -220,6 +237,37 @@ public class CsvHandler {
           );
           writer.println(line);
         }
+        for (String exercise : exercises) {
+          String[] parts = exercise.split(",");
+
+          // Check if the exercise entry has the correct number of parts
+          if (parts.length >= 4) {
+            String[] dateParts = parts[0].split("-");
+
+            // Check if the date has the correct format
+            if (dateParts.length == 3) {
+              // Extract year, month, and day from the date
+              String year = dateParts[0];
+              String month = dateParts[1];
+              String day = dateParts[2];
+              // Extract exercise name and calories
+              String exerciseName = parts[2];
+              String calories = parts[3];
+
+              // Construct the formatted line
+              String formattedLine = year + "," + month + "," + day + ",e," + exerciseName + "," + calories;
+              // Write the formatted line to the log file
+              writer.println(formattedLine);
+
+            }
+          }
+        }
+
+//        exercises.forEach(line->
+//                writer.println(line)
+//        );
+
+
       }
     } catch (IOException e) {
       LOGGER.log("Error writing log CSV file: " + logFileName);

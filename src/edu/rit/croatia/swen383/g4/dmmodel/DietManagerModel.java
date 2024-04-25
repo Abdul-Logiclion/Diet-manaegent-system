@@ -20,6 +20,9 @@ public class DietManagerModel {
   private final CsvHandler csvHandler;
   private final FoodCollection foodCollection;
   private final LogCollection logCollection;
+
+  //private final ExerciseCollection exerciseCollection;
+
   private final User user;
 
   /**
@@ -27,11 +30,12 @@ public class DietManagerModel {
    *
    * @param foodCsvFile the food csv file
    * @param logCsvFile  the log csv file
+   * @param exerciseCsvFile  the log csv file
    */
-  public DietManagerModel(String foodCsvFile, String logCsvFile) {
+  public DietManagerModel(String foodCsvFile, String logCsvFile,String exerciseCsvFile) {
     foodCollection = new FoodCollection();
     logCollection = new LogCollection();
-    csvHandler = new CsvHandler(foodCsvFile, logCsvFile);
+    csvHandler = new CsvHandler(foodCsvFile, logCsvFile,exerciseCsvFile);
     user = new User();
     loadCsvData();
   }
